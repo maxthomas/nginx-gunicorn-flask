@@ -1,16 +1,16 @@
 # nginx-gunicorn-flask
 
-FROM debian:latest
+FROM cabeceo/debunk
 
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get update -qq
-RUN apt-get install -qq -y python3 python3-pip python3-virtualenv nginx gunicorn supervisor
+RUN apt-get update -qq && \
+    apt-get install -qq -y python python-pip python-virtualenv nginx supervisor
 
 # Setup flask application
-RUN mkdir -p /deploy/app
+RUN mkdir -p /deploy/app && virtualenv /deploy/venv
 COPY app /deploy/app
-RUN pip install -r /deploy/app/requirements.txt
+RUN source /deploy/venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install -r /deploy/app/requirements.txt
 
 # Setup nginx
 RUN rm /etc/nginx/sites-enabled/default
